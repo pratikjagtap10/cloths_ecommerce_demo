@@ -1,0 +1,145 @@
+// core-db: owned ONLY by core-service (database-per-service).
+// @map / @@map keep table and column names snake_case in PostgreSQL.
+
+generator client {
+  provider      = "prisma-client-js"
+  // Each service generates its own client, so the two schemas never overwrite each other
+  output        = "../generated/client"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("CORE_DATABASE_URL")
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique // always stored lower-case
+  passwordHash String    @map("password_hash")
+  firstName    String    @default("") @map("first_name")
+  lastName     String    @default("") @map("last_name")
+  isActive     Boolean   @default(true) @map("is_active")
+  isStaff      Boolean   @default(false) @map("is_staff")
+  isSuperuser  Boolean   @default(false) @map("is_superuser")
+  dateJoined   DateTime  @default(now()) @map("date_joined")
+  lastLogin    DateTime? @map("last_login")
+  orders       Order[]
+
+  @@map("users")
+}
+
+model Category {
+  id       Int        @id @default(autoincrement())
+  name     String
+  slug     String     @unique
+  parentId Int?       @map("parent_id")
+  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children Category[] @relation("CategoryTree")
+  products Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id          Int              @id @default(autoincrement())
+  name        String
+  slug        String           @unique
+  description String           @default("")
+  categoryId  Int              @map("category_id")
+  category    Category         @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  basePrice   Int              @map("base_price") // whole rupees
+  isActive    Boolean          @default(true) @map("is_active")
+  isFeatured  Boolean          @default(false) @map("is_featured")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  variants    ProductVariant[]
+  images      ProductImage[]
+
+  @@index([isActive, isFeatured])
+  @@map("products")
+}
+
+model ProductVariant {
+  id            Int     @id @default(autoincrement())
+  productId     Int     @map("product_id")
+  product       Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  size          String
+  color         String
+  colorHex      String  @default("#000000") @map("color_hex")
+  sku           String  @unique
+  stock         Int     @default(0) // CHECK (stock >= 0) is added in the migration
+  priceOverride Int?    @map("price_override") // null -> product.basePrice
+
+  @@unique([productId, size, color])
+  @@map("product_variants")
+}
+
+model ProductImage {
+  id        Int     @id @default(autoincrement())
+  productId Int     @map("product_id")
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  altText   String  @default("") @map("alt_text")
+
+  @@map("product_images")
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  CANCELLED
+
+  @@map("order_status")
+}
+
+model Order {
+  id          Int         @id @default(autoincrement())
+  userId      Int         @map("user_id")
+  user        User        @relation(fields: [userId], references: [id], onDelete: Restrict)
+  status      OrderStatus @default(PENDING)
+  subtotal    Int
+  shippingFee Int         @map("shipping_fee")
+  total       Int
+  // Shipping address (flat columns, returned as a nested "address" object)
+  fullName    String      @map("full_name")
+  phone       String
+  line1       String
+  city        String
+  state       String
+  postalCode  String      @map("postal_code")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  items       OrderItem[]
+
+  @@index([userId, createdAt])
+  @@map("orders")
+}
+
+// Snapshot of the product at purchase time: later price/name changes don't alter old orders
+model OrderItem {
+  id          Int    @id @default(autoincrement())
+  orderId     Int    @map("order_id")
+  order       Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variantId   Int    @map("variant_id")
+  productName String @map("product_name")
+  productSlug String @map("product_slug")
+  size        String
+  color       String
+  colorHex    String @map("color_hex")
+  quantity    Int
+  unitPrice   Int    @map("unit_price")
+
+  @@index([orderId])
+  @@map("order_items")
+}
+
+// Ids of events already handled by core-worker: makes event handling idempotent
+// (Redis Streams deliver "at least once", so the same event can arrive twice).
+model ProcessedEvent {
+  id          Int      @id @default(autoincrement())
+  eventId     String   @unique @map("event_id")
+  processedAt DateTime @default(now()) @map("processed_at")
+
+  @@map("processed_events")
+}

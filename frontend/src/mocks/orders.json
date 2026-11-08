@@ -1,0 +1,41 @@
+[
+  {
+    "id": 1001,
+    "user_id": 1,
+    "status": "SHIPPED",
+    "total": 2697,
+    "shipping_fee": 0,
+    "address": {
+      "full_name": "Demo User",
+      "phone": "9876543210",
+      "line1": "12 MG Road",
+      "city": "Bengaluru",
+      "state": "Karnataka",
+      "postal_code": "560001"
+    },
+    "created_at": "2026-10-12T10:15:00.000Z",
+    "items": [
+      { "id": 1, "variant_id": 2, "product_name": "Classic Crew Neck Tee", "product_slug": "classic-crew-neck-tee", "size": "M", "color": "Black", "color_hex": "#1f2937", "quantity": 2, "unit_price": 599 },
+      { "id": 2, "variant_id": 30, "product_name": "Oxford Button-Down Shirt", "product_slug": "oxford-button-down-shirt", "size": "M", "color": "White", "color_hex": "#f9fafb", "quantity": 1, "unit_price": 1499 }
+    ]
+  },
+  {
+    "id": 1002,
+    "user_id": 1,
+    "status": "PAID",
+    "total": 2298,
+    "shipping_fee": 99,
+    "address": {
+      "full_name": "Demo User",
+      "phone": "9876543210",
+      "line1": "12 MG Road",
+      "city": "Bengaluru",
+      "state": "Karnataka",
+      "postal_code": "560001"
+    },
+    "created_at": "2026-10-28T16:40:00.000Z",
+    "items": [
+      { "id": 3, "variant_id": 69, "product_name": "Floral Wrap Dress", "product_slug": "floral-wrap-dress", "size": "XS", "color": "Coral", "color_hex": "#fb7185", "quantity": 1, "unit_price": 2199 }
+    ]
+  }
+]

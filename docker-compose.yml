@@ -1,0 +1,156 @@
+# Threads cloth store: the whole application on one machine.
+#
+#   docker compose up --build -d      start everything  ->  http://localhost
+#   docker compose ps                 status / health
+#   docker compose logs -f shop-service core-worker
+#   docker compose down               stop (data is kept in volumes)
+#   docker compose down -v            stop AND delete all data
+#
+# Settings come from .env (copy .env.example). Every value has a dev default, so it
+# also runs without a .env file.
+
+x-common-env: &common-env
+  JWT_SECRET: ${JWT_SECRET:-dev-only-jwt-secret-change-me-0123456789abcdef}
+  INTERNAL_API_KEY: ${INTERNAL_API_KEY:-dev-internal-key-change-me}
+  REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+  EVENTS_STREAM: ${EVENTS_STREAM:-events}
+  LOG_LEVEL: ${LOG_LEVEL:-info}
+
+x-core-env: &core-env
+  <<: *common-env
+  CORE_DATABASE_URL: ${CORE_DATABASE_URL:-postgresql://core:core@core-db:5432/core_db}
+  JWT_ACCESS_MINUTES: ${JWT_ACCESS_MINUTES:-30}
+  JWT_REFRESH_DAYS: ${JWT_REFRESH_DAYS:-7}
+  SEED_DEMO_DATA: ${SEED_DEMO_DATA:-1}
+
+x-core-build: &core-build
+  context: .
+  dockerfile: services/core-service/Dockerfile
+
+services:
+  # ---------------------------------------------------------------- data stores
+  core-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: core
+      POSTGRES_PASSWORD: core
+      POSTGRES_DB: core_db
+    ports: ["5433:5432"] # for local tools (psql, Prisma Studio)
+    volumes: [core-db-data:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U core -d core_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  shop-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: shop
+      POSTGRES_PASSWORD: shop
+      POSTGRES_DB: shop_db
+    ports: ["5434:5432"]
+    volumes: [shop-db-data:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shop -d shop_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    # appendonly: stream messages survive a Redis restart
+    command: ["redis-server", "--appendonly", "yes"]
+    ports: ["6379:6379"]
+    volumes: [redis-data:/data]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------- services
+  core-service:
+    build: *core-build
+    image: threads/core-service:local
+    environment: *core-env
+    ports: ["8000:8000"] # direct access (Postman "internal" folder); browsers use the gateway
+    depends_on:
+      core-db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    restart: unless-stopped
+
+  core-worker:
+    build: *core-build
+    image: threads/core-service:local
+    command: ["node", "dist/worker.js"]
+    environment: *core-env
+    depends_on:
+      core-service: { condition: service_healthy } # migrations are applied by core-service
+      redis: { condition: service_healthy }
+    healthcheck:
+      disable: true # no HTTP port; Docker restarts it if it crashes
+    restart: unless-stopped
+
+  shop-service:
+    build:
+      context: .
+      dockerfile: services/shop-service/Dockerfile
+    image: threads/shop-service:local
+    environment:
+      <<: *common-env
+      SHOP_DATABASE_URL: ${SHOP_DATABASE_URL:-postgresql://shop:shop@shop-db:5432/shop_db}
+      CORE_SERVICE_URL: ${CORE_SERVICE_URL:-http://core-service:8000}
+    ports: ["8001:8001"]
+    depends_on:
+      shop-db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      core-service: { condition: service_healthy }
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      target: runner
+      args:
+        NEXT_PUBLIC_USE_MOCK: ${NEXT_PUBLIC_USE_MOCK:-false}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost/api}
+    image: threads/frontend:local
+    environment:
+      # Next.js server components call the API through the gateway inside Docker
+      API_INTERNAL_URL: http://nginx/api
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------- gateway
+  nginx:
+    image: nginx:1.27-alpine
+    ports: ["80:80"]
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      frontend: { condition: service_started }
+      core-service: { condition: service_healthy }
+      shop-service: { condition: service_healthy }
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------- optional tools
+  # Web UI to browse both PostgreSQL databases: http://localhost:8080
+  # Not started by default. Start it with:  docker compose --profile tools up -d
+  adminer:
+    image: adminer:4.8.1
+    profiles: ["tools"]
+    environment:
+      ADMINER_DEFAULT_SERVER: core-db
+    ports: ["8080:8080"]
+    depends_on:
+      core-db: { condition: service_healthy }
+      shop-db: { condition: service_healthy }
+    restart: unless-stopped
+
+volumes:
+  core-db-data:
+  shop-db-data:
+  redis-data:

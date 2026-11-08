@@ -1,0 +1,1532 @@
+[
+  {
+    "id": 1,
+    "name": "Classic Crew Neck Tee",
+    "slug": "classic-crew-neck-tee",
+    "description": "Soft 100% combed cotton tee with a classic crew neck. Your everyday essential.",
+    "category": {
+      "id": 4,
+      "name": "T-Shirts",
+      "slug": "men-tshirts"
+    },
+    "base_price": 599,
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2026-10-30T00:00:00.000Z",
+    "images": [],
+    "variants": [
+      {
+        "id": 1,
+        "size": "S",
+        "color": "Black",
+        "color_hex": "#1f2937",
+        "sku": "CLT-001-BLA-S",
+        "stock": 0,
+        "price": 599
+      },
+      {
+        "id": 2,
+        "size": "M",
+        "color": "Black",
+        "color_hex": "#1f2937",
+        "sku": "CLT-001-BLA-M",
+        "stock": 3,
+        "price": 599
+      },
+      {
+        "id": 3,
+        "size": "L",
+        "color": "Black",
+        "color_hex": "#1f2937",
+        "sku": "CLT-001-BLA-L",
+        "stock": 6,
+        "price": 599
+      },
+      {
+        "id": 4,
+        "size": "XL",
+        "color": "Black",
+        "color_hex": "#1f2937",
+        "sku": "CLT-001-BLA-XL",
+        "stock": 9,
+        "price": 699
+      },
+      {
+        "id": 5,
+        "size": "S",
+        "color": "White",
+        "color_hex": "#f9fafb",
+        "sku": "CLT-001-WHI-S",
+        "stock": 5,
+        "price": 599
+      },
+      {
+        "id": 6,
+        "size": "M",
+        "color": "White",
+        "color_hex": "#f9fafb",
+        "sku": "CLT-001-WHI-M",
+        "stock": 8,
+        "price": 599
+      },
+      {
+        "id": 7,
+        "size": "L",
+        "color": "White",
+        "color_hex": "#f9fafb",
+        "sku": "CLT-001-WHI-L",
+        "stock": 11,
+        "price": 599
+      },
+      {
+        "id": 8,
+        "size": "XL",
+        "color": "White",
+        "color_hex": "#f9fafb",
+        "sku": "CLT-001-WHI-XL",
+        "stock": 1,
+        "price": 699
+      },
+      {
+        "id": 9,
+        "size": "S",
+        "color": "Navy",
+        "color_hex": "#1e3a8a",
+        "sku": "CLT-001-NAV-S",
+        "stock": 10,
+        "price": 599
+      },
+      {
+        "id": 10,
+        "size": "M",
+        "color": "Navy",
+        "color_hex": "#1e3a8a",
+        "sku": "CLT-001-NAV-M",
+        "stock": 0,
+        "price": 599
+      },
+      {
+        "id": 11,
+        "size": "L",
+        "color": "Navy",
+        "color_hex": "#1e3a8a",
+        "sku": "CLT-001-NAV-L",
+        "stock": 3,
+        "price": 599
+      },
+      {
+        "id": 12,
+        "size": "XL",
+        "color": "Navy",
+        "color_hex": "#1e3a8a",
+        "sku": "CLT-001-NAV-XL",
+        "stock": 6,
+        "price": 699
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Graphic Print Tee",
+    "slug": "graphic-print-tee",
+    "description": "Relaxed fit cotton tee with a bold front graphic print.",
+    "category": {
+      "id": 4,
+      "name": "T-Shirts",
+      "slug": "men-tshirts"
+    },
+    "base_price": 799,
+    "is_active": true,
+    "is_featured": false,
+    "created_at": "2026-10-28T00:00:00.000Z",
+    "images": [],
+    "variants": [
+      {
+        "id": 13,
+        "size": "S",
+        "color": "White",
+        "color_hex": "#f9fafb",
+        "sku": "CLT-002-WHI-S",
+        "stock": 7,
+        "price": 799
+      },
+      {
+        "id": 14,
+        "size": "M",
+        "color": "White",
+        "color_hex": "#f9fafb",
+        "sku": "CLT-002-WHI-M",
+        "stock": 10,
+        "price": 799
+      },
+      {
+        "id": 15,
+        "size": "L",
+        "color": "White",
+        "color_hex": "#f9fafb",
+        "sku": "CLT-002-WHI-L",
+        "stock": 0,
+        "price": 799
+      },
+      {
+        "id": 16,
+        "size": "XL",
+        "color": "White",
+        "color_hex": "#f9fafb",
+        "sku": "CLT-002-WHI-XL",
+        "stock": 3,
+        "price": 899
+      },
+      {
+        "id": 17,
+        "size": "S",
+        "color": "Olive",
+        "color_hex": "#556b2f",
+        "sku": "CLT-002-OLI-S",
+        "stock": 12,
+        "price": 799
+      },
+      {
+        "id": 18,
+        "size": "M",
+        "color": "Olive",
+        "color_hex": "#556b2f",
+        "sku": "CLT-002-OLI-M",
+        "stock": 2,
+        "price": 799
+      },
+      {
+        "id": 19,
+        "size": "L",
+        "color": "Olive",
+        "color_hex": "#556b2f",
+        "sku": "CLT-002-OLI-L",
+        "stock": 5,
+        "price": 799
+      },
+      {
+        "id": 20,
+        "size": "XL",
+        "color": "Olive",
+        "color_hex": "#556b2f",
+        "sku": "CLT-002-OLI-XL",
+        "stock": 8,
+        "price": 899
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Pocket Henley Tee",
+    "slug": "pocket-henley-tee",
+    "description": "Three-button henley with a chest pocket in slub cotton.",
+    "category": {
+      "id": 4,
+      "name": "T-Shirts",
+      "slug": "men-tshirts"
+    },
+    "base_price": 899,
+    "is_active": true,
+    "is_featured": false,
+    "created_at": "2026-10-26T00:00:00.000Z",
+    "images": [],
+    "variants": [
+      {
+        "id": 21,
+        "size": "S",
+        "color": "Grey",
+        "color_hex": "#9ca3af",
+        "sku": "CLT-003-GRE-S",
+        "stock": 1,
+        "price": 899
+      },
+      {
+        "id": 22,
+        "size": "M",
+        "color": "Grey",
+        "color_hex": "#9ca3af",
+        "sku": "CLT-003-GRE-M",
+        "stock": 4,
+        "price": 899
+      },
+      {
+        "id": 23,
+        "size": "L",
+        "color": "Grey",
+        "color_hex": "#9ca3af",
+        "sku": "CLT-003-GRE-L",
+        "stock": 7,
+        "price": 899
+      },
+      {
+        "id": 24,
+        "size": "XL",
+        "color": "Grey",
+        "color_hex": "#9ca3af",
+        "sku": "CLT-003-GRE-XL",
+        "stock": 10,
+        "price": 999
+      },
+      {
+        "id": 25,
+        "size": "S",
+        "color": "Maroon",
+        "color_hex": "#7f1d1d",
+        "sku": "CLT-003-MAR-S",
+        "stock": 6,
+        "price": 899
+      },
+      {
+        "id": 26,
+        "size": "M",
+        "color": "Maroon",
+        "color_hex": "#7f1d1d",
+        "sku": "CLT-003-MAR-M",
+        "stock": 9,
+        "price": 899
+      },
+      {
+        "id": 27,
+        "size": "L",
+        "color": "Maroon",
+        "color_hex": "#7f1d1d",
+        "sku": "CLT-003-MAR-L",
+        "stock": 12,
+        "price": 899
+      },
+      {
+        "id": 28,
+        "size": "XL",
+        "color": "Maroon",
+        "color_hex": "#7f1d1d",
+        "sku": "CLT-003-MAR-XL",
+        "stock": 2,
+        "price": 999
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Oxford Button-Down Shirt",
+    "slug": "oxford-button-down-shirt",
+    "description": "Crisp oxford weave shirt with button-down collar. Office to weekend.",
+    "category": {
+      "id": 5,
+      "name": "Shirts",
+      "slug": "men-shirts"
+    },
+    "base_price": 1499,
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2026-10-24T00:00:00.000Z",
+    "images": [],
+    "variants": [
+      {
+        "id": 29,
+        "size": "S",
+        "color": "White",
+        "color_hex": "#f9fafb",
+        "sku": "CLT-004-WHI-S",
+        "stock": 8,
+        "price": 1499
+      },
+      {
+        "id": 30,
+        "size": "M",
+        "color": "White",
+        "color_hex": "#f9fafb",
+        "sku": "CLT-004-WHI-M",
+        "stock": 11,
+        "price": 1499
+      },
+      {
+        "id": 31,
+        "size": "L",
+        "color": "White",
+        "color_hex": "#f9fafb",
+        "sku": "CLT-004-WHI-L",
+        "stock": 1,
+        "price": 1499
+      },
+      {
+        "id": 32,
+        "size": "XL",
+        "color": "White",
+        "color_hex": "#f9fafb",
+        "sku": "CLT-004-WHI-XL",
+        "stock": 4,
+        "price": 1599
+      },
+      {
+        "id": 33,
+        "size": "S",
+        "color": "Sky Blue",
+        "color_hex": "#7dd3fc",
+        "sku": "CLT-004-SKY-S",
+        "stock": 0,
+        "price": 1499
+      },
+      {
+        "id": 34,
+        "size": "M",
+        "color": "Sky Blue",
+        "color_hex": "#7dd3fc",
+        "sku": "CLT-004-SKY-M",
+        "stock": 3,
+        "price": 1499
+      },
+      {
+        "id": 35,
+        "size": "L",
+        "color": "Sky Blue",
+        "color_hex": "#7dd3fc",
+        "sku": "CLT-004-SKY-L",
+        "stock": 6,
+        "price": 1499
+      },
+      {
+        "id": 36,
+        "size": "XL",
+        "color": "Sky Blue",
+        "color_hex": "#7dd3fc",
+        "sku": "CLT-004-SKY-XL",
+        "stock": 9,
+        "price": 1599
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Linen Casual Shirt",
+    "slug": "linen-casual-shirt",
+    "description": "Breathable pure linen shirt for warm days.",
+    "category": {
+      "id": 5,
+      "name": "Shirts",
+      "slug": "men-shirts"
+    },
+    "base_price": 1799,
+    "is_active": true,
+    "is_featured": false,
+    "created_at": "2026-10-22T00:00:00.000Z",
+    "images": [],
+    "variants": [
+      {
+        "id": 37,
+        "size": "S",
+        "color": "Beige",
+        "color_hex": "#d6c7a1",
+        "sku": "CLT-005-BEI-S",
+        "stock": 2,
+        "price": 1799
+      },
+      {
+        "id": 38,
+        "size": "M",
+        "color": "Beige",
+        "color_hex": "#d6c7a1",
+        "sku": "CLT-005-BEI-M",
+        "stock": 5,
+        "price": 1799
+      },
+      {
+        "id": 39,
+        "size": "L",
+        "color": "Beige",
+        "color_hex": "#d6c7a1",
+        "sku": "CLT-005-BEI-L",
+        "stock": 8,
+        "price": 1799
+      },
+      {
+        "id": 40,
+        "size": "XL",
+        "color": "Beige",
+        "color_hex": "#d6c7a1",
+        "sku": "CLT-005-BEI-XL",
+        "stock": 11,
+        "price": 1899
+      },
+      {
+        "id": 41,
+        "size": "S",
+        "color": "Olive",
+        "color_hex": "#556b2f",
+        "sku": "CLT-005-OLI-S",
+        "stock": 7,
+        "price": 1799
+      },
+      {
+        "id": 42,
+        "size": "M",
+        "color": "Olive",
+        "color_hex": "#556b2f",
+        "sku": "CLT-005-OLI-M",
+        "stock": 10,
+        "price": 1799
+      },
+      {
+        "id": 43,
+        "size": "L",
+        "color": "Olive",
+        "color_hex": "#556b2f",
+        "sku": "CLT-005-OLI-L",
+        "stock": 0,
+        "price": 1799
+      },
+      {
+        "id": 44,
+        "size": "XL",
+        "color": "Olive",
+        "color_hex": "#556b2f",
+        "sku": "CLT-005-OLI-XL",
+        "stock": 3,
+        "price": 1899
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Slim Fit Stretch Jeans",
+    "slug": "slim-fit-stretch-jeans",
+    "description": "Slim fit denim with 2% stretch for all-day comfort.",
+    "category": {
+      "id": 6,
+      "name": "Jeans",
+      "slug": "men-jeans"
+    },
+    "base_price": 1999,
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2026-10-20T00:00:00.000Z",
+    "images": [],
+    "variants": [
+      {
+        "id": 45,
+        "size": "30",
+        "color": "Indigo",
+        "color_hex": "#312e81",
+        "sku": "CLT-006-IND-30",
+        "stock": 9,
+        "price": 1999
+      },
+      {
+        "id": 46,
+        "size": "32",
+        "color": "Indigo",
+        "color_hex": "#312e81",
+        "sku": "CLT-006-IND-32",
+        "stock": 12,
+        "price": 1999
+      },
+      {
+        "id": 47,
+        "size": "34",
+        "color": "Indigo",
+        "color_hex": "#312e81",
+        "sku": "CLT-006-IND-34",
+        "stock": 2,
+        "price": 1999
+      },
+      {
+        "id": 48,
+        "size": "36",
+        "color": "Indigo",
+        "color_hex": "#312e81",
+        "sku": "CLT-006-IND-36",
+        "stock": 5,
+        "price": 1999
+      },
+      {
+        "id": 49,
+        "size": "30",
+        "color": "Black",
+        "color_hex": "#1f2937",
+        "sku": "CLT-006-BLA-30",
+        "stock": 1,
+        "price": 1999
+      },
+      {
+        "id": 50,
+        "size": "32",
+        "color": "Black",
+        "color_hex": "#1f2937",
+        "sku": "CLT-006-BLA-32",
+        "stock": 4,
+        "price": 1999
+      },
+      {
+        "id": 51,
+        "size": "34",
+        "color": "Black",
+        "color_hex": "#1f2937",
+        "sku": "CLT-006-BLA-34",
+        "stock": 7,
+        "price": 1999
+      },
+      {
+        "id": 52,
+        "size": "36",
+        "color": "Black",
+        "color_hex": "#1f2937",
+        "sku": "CLT-006-BLA-36",
+        "stock": 10,
+        "price": 1999
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "name": "Denim Trucker Jacket",
+    "slug": "denim-trucker-jacket",
+    "description": "Timeless trucker jacket in rigid denim with chest pockets.",
+    "category": {
+      "id": 12,
+      "name": "Jackets",
+      "slug": "men-jackets"
+    },
+    "base_price": 2999,
+    "is_active": true,
+    "is_featured": false,
+    "created_at": "2026-10-18T00:00:00.000Z",
+    "images": [],
+    "variants": [
+      {
+        "id": 53,
+        "size": "S",
+        "color": "Indigo",
+        "color_hex": "#312e81",
+        "sku": "CLT-007-IND-S",
+        "stock": 3,
+        "price": 2999
+      },
+      {
+        "id": 54,
+        "size": "M",
+        "color": "Indigo",
+        "color_hex": "#312e81",
+        "sku": "CLT-007-IND-M",
+        "stock": 6,
+        "price": 2999
+      },
+      {
+        "id": 55,
+        "size": "L",
+        "color": "Indigo",
+        "color_hex": "#312e81",
+        "sku": "CLT-007-IND-L",
+        "stock": 9,
+        "price": 2999
+      },
+      {
+        "id": 56,
+        "size": "XL",
+        "color": "Indigo",
+        "color_hex": "#312e81",
+        "sku": "CLT-007-IND-XL",
+        "stock": 12,
+        "price": 3099
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "name": "Lightweight Bomber Jacket",
+    "slug": "lightweight-bomber-jacket",
+    "description": "Water-resistant bomber with ribbed cuffs and zip pocket.",
+    "category": {
+      "id": 12,
+      "name": "Jackets",
+      "slug": "men-jackets"
+    },
+    "base_price": 3499,
+    "is_active": true,
+    "is_featured": false,
+    "created_at": "2026-10-16T00:00:00.000Z",
+    "images": [],
+    "variants": [
+      {
+        "id": 57,
+        "size": "S",
+        "color": "Black",
+        "color_hex": "#1f2937",
+        "sku": "CLT-008-BLA-S",
+        "stock": 10,
+        "price": 3499
+      },
+      {
+        "id": 58,
+        "size": "M",
+        "color": "Black",
+        "color_hex": "#1f2937",
+        "sku": "CLT-008-BLA-M",
+        "stock": 0,
+        "price": 3499
+      },
+      {
+        "id": 59,
+        "size": "L",
+        "color": "Black",
+        "color_hex": "#1f2937",
+        "sku": "CLT-008-BLA-L",
+        "stock": 3,
+        "price": 3499
+      },
+      {
+        "id": 60,
+        "size": "XL",
+        "color": "Black",
+        "color_hex": "#1f2937",
+        "sku": "CLT-008-BLA-XL",
+        "stock": 6,
+        "price": 3599
+      },
+      {
+        "id": 61,
+        "size": "S",
+        "color": "Olive",
+        "color_hex": "#556b2f",
+        "sku": "CLT-008-OLI-S",
+        "stock": 2,
+        "price": 3499
+      },
+      {
+        "id": 62,
+        "size": "M",
+        "color": "Olive",
+        "color_hex": "#556b2f",
+        "sku": "CLT-008-OLI-M",
+        "stock": 5,
+        "price": 3499
+      },
+      {
+        "id": 63,
+        "size": "L",
+        "color": "Olive",
+        "color_hex": "#556b2f",
+        "sku": "CLT-008-OLI-L",
+        "stock": 8,
+        "price": 3499
+      },
+      {
+        "id": 64,
+        "size": "XL",
+        "color": "Olive",
+        "color_hex": "#556b2f",
+        "sku": "CLT-008-OLI-XL",
+        "stock": 11,
+        "price": 3599
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "name": "Floral Wrap Dress",
+    "slug": "floral-wrap-dress",
+    "description": "Flowy wrap dress with an all-over floral print and tie waist.",
+    "category": {
+      "id": 7,
+      "name": "Dresses",
+      "slug": "women-dresses"
+    },
+    "base_price": 2199,
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2026-10-14T00:00:00.000Z",
+    "images": [],
+    "variants": [
+      {
+        "id": 65,
+        "size": "XS",
+        "color": "Coral",
+        "color_hex": "#fb7185",
+        "sku": "CLT-009-COR-XS",
+        "stock": 4,
+        "price": 2199
+      },
+      {
+        "id": 66,
+        "size": "S",
+        "color": "Coral",
+        "color_hex": "#fb7185",
+        "sku": "CLT-009-COR-S",
+        "stock": 7,
+        "price": 2199
+      },
+      {
+        "id": 67,
+        "size": "M",
+        "color": "Coral",
+        "color_hex": "#fb7185",
+        "sku": "CLT-009-COR-M",
+        "stock": 10,
+        "price": 2199
+      },
+      {
+        "id": 68,
+        "size": "L",
+        "color": "Coral",
+        "color_hex": "#fb7185",
+        "sku": "CLT-009-COR-L",
+        "stock": 0,
+        "price": 2199
+      },
+      {
+        "id": 69,
+        "size": "XS",
+        "color": "Navy",
+        "color_hex": "#1e3a8a",
+        "sku": "CLT-009-NAV-XS",
+        "stock": 9,
+        "price": 2199
+      },
+      {
+        "id": 70,
+        "size": "S",
+        "color": "Navy",
+        "color_hex": "#1e3a8a",
+        "sku": "CLT-009-NAV-S",
+        "stock": 12,
+        "price": 2199
+      },
+      {
+        "id": 71,
+        "size": "M",
+        "color": "Navy",
+        "color_hex": "#1e3a8a",
+        "sku": "CLT-009-NAV-M",
+        "stock": 2,
+        "price": 2199
+      },
+      {
+        "id": 72,
+        "size": "L",
+        "color": "Navy",
+        "color_hex": "#1e3a8a",
+        "sku": "CLT-009-NAV-L",
+        "stock": 5,
+        "price": 2199
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "name": "Linen Midi Dress",
+    "slug": "linen-midi-dress",
+    "description": "Relaxed midi dress in breathable linen with side pockets.",
+    "category": {
+      "id": 7,
+      "name": "Dresses",
+      "slug": "women-dresses"
+    },
+    "base_price": 2499,
+    "is_active": true,
+    "is_featured": false,
+    "created_at": "2026-10-12T00:00:00.000Z",
+    "images": [],
+    "variants": [
+      {
+        "id": 73,
+        "size": "XS",
+        "color": "Beige",
+        "color_hex": "#d6c7a1",
+        "sku": "CLT-010-BEI-XS",
+        "stock": 11,
+        "price": 2499
+      },
+      {
+        "id": 74,
+        "size": "S",
+        "color": "Beige",
+        "color_hex": "#d6c7a1",
+        "sku": "CLT-010-BEI-S",
+        "stock": 1,
+        "price": 2499
+      },
+      {
+        "id": 75,
+        "size": "M",
+        "color": "Beige",
+        "color_hex": "#d6c7a1",
+        "sku": "CLT-010-BEI-M",
+        "stock": 4,
+        "price": 2499
+      },
+      {
+        "id": 76,
+        "size": "L",
+        "color": "Beige",
+        "color_hex": "#d6c7a1",
+        "sku": "CLT-010-BEI-L",
+        "stock": 7,
+        "price": 2499
+      },
+      {
+        "id": 77,
+        "size": "XS",
+        "color": "White",
+        "color_hex": "#f9fafb",
+        "sku": "CLT-010-WHI-XS",
+        "stock": 3,
+        "price": 2499
+      },
+      {
+        "id": 78,
+        "size": "S",
+        "color": "White",
+        "color_hex": "#f9fafb",
+        "sku": "CLT-010-WHI-S",
+        "stock": 6,
+        "price": 2499
+      },
+      {
+        "id": 79,
+        "size": "M",
+        "color": "White",
+        "color_hex": "#f9fafb",
+        "sku": "CLT-010-WHI-M",
+        "stock": 9,
+        "price": 2499
+      },
+      {
+        "id": 80,
+        "size": "L",
+        "color": "White",
+        "color_hex": "#f9fafb",
+        "sku": "CLT-010-WHI-L",
+        "stock": 12,
+        "price": 2499
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "name": "Little Black Dress",
+    "slug": "little-black-dress",
+    "description": "Elegant fitted dress for evenings out.",
+    "category": {
+      "id": 7,
+      "name": "Dresses",
+      "slug": "women-dresses"
+    },
+    "base_price": 2799,
+    "is_active": true,
+    "is_featured": false,
+    "created_at": "2026-10-10T00:00:00.000Z",
+    "images": [],
+    "variants": [
+      {
+        "id": 81,
+        "size": "XS",
+        "color": "Black",
+        "color_hex": "#1f2937",
+        "sku": "CLT-011-BLA-XS",
+        "stock": 5,
+        "price": 2799
+      },
+      {
+        "id": 82,
+        "size": "S",
+        "color": "Black",
+        "color_hex": "#1f2937",
+        "sku": "CLT-011-BLA-S",
+        "stock": 8,
+        "price": 2799
+      },
+      {
+        "id": 83,
+        "size": "M",
+        "color": "Black",
+        "color_hex": "#1f2937",
+        "sku": "CLT-011-BLA-M",
+        "stock": 11,
+        "price": 2799
+      },
+      {
+        "id": 84,
+        "size": "L",
+        "color": "Black",
+        "color_hex": "#1f2937",
+        "sku": "CLT-011-BLA-L",
+        "stock": 1,
+        "price": 2799
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "name": "Ribbed Crop Top",
+    "slug": "ribbed-crop-top",
+    "description": "Stretchy ribbed crop top. Pairs perfectly with high-rise jeans.",
+    "category": {
+      "id": 8,
+      "name": "Tops",
+      "slug": "women-tops"
+    },
+    "base_price": 699,
+    "is_active": true,
+    "is_featured": false,
+    "created_at": "2026-10-08T00:00:00.000Z",
+    "images": [],
+    "variants": [
+      {
+        "id": 85,
+        "size": "XS",
+        "color": "White",
+        "color_hex": "#f9fafb",
+        "sku": "CLT-012-WHI-XS",
+        "stock": 12,
+        "price": 699
+      },
+      {
+        "id": 86,
+        "size": "S",
+        "color": "White",
+        "color_hex": "#f9fafb",
+        "sku": "CLT-012-WHI-S",
+        "stock": 2,
+        "price": 699
+      },
+      {
+        "id": 87,
+        "size": "M",
+        "color": "White",
+        "color_hex": "#f9fafb",
+        "sku": "CLT-012-WHI-M",
+        "stock": 5,
+        "price": 699
+      },
+      {
+        "id": 88,
+        "size": "L",
+        "color": "White",
+        "color_hex": "#f9fafb",
+        "sku": "CLT-012-WHI-L",
+        "stock": 8,
+        "price": 699
+      },
+      {
+        "id": 89,
+        "size": "XS",
+        "color": "Black",
+        "color_hex": "#1f2937",
+        "sku": "CLT-012-BLA-XS",
+        "stock": 4,
+        "price": 699
+      },
+      {
+        "id": 90,
+        "size": "S",
+        "color": "Black",
+        "color_hex": "#1f2937",
+        "sku": "CLT-012-BLA-S",
+        "stock": 7,
+        "price": 699
+      },
+      {
+        "id": 91,
+        "size": "M",
+        "color": "Black",
+        "color_hex": "#1f2937",
+        "sku": "CLT-012-BLA-M",
+        "stock": 10,
+        "price": 699
+      },
+      {
+        "id": 92,
+        "size": "L",
+        "color": "Black",
+        "color_hex": "#1f2937",
+        "sku": "CLT-012-BLA-L",
+        "stock": 0,
+        "price": 699
+      },
+      {
+        "id": 93,
+        "size": "XS",
+        "color": "Pink",
+        "color_hex": "#f9a8d4",
+        "sku": "CLT-012-PIN-XS",
+        "stock": 9,
+        "price": 699
+      },
+      {
+        "id": 94,
+        "size": "S",
+        "color": "Pink",
+        "color_hex": "#f9a8d4",
+        "sku": "CLT-012-PIN-S",
+        "stock": 12,
+        "price": 699
+      },
+      {
+        "id": 95,
+        "size": "M",
+        "color": "Pink",
+        "color_hex": "#f9a8d4",
+        "sku": "CLT-012-PIN-M",
+        "stock": 2,
+        "price": 699
+      },
+      {
+        "id": 96,
+        "size": "L",
+        "color": "Pink",
+        "color_hex": "#f9a8d4",
+        "sku": "CLT-012-PIN-L",
+        "stock": 5,
+        "price": 699
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "name": "Silk Blend Blouse",
+    "slug": "silk-blend-blouse",
+    "description": "Lustrous silk blend blouse with a relaxed drape.",
+    "category": {
+      "id": 8,
+      "name": "Tops",
+      "slug": "women-tops"
+    },
+    "base_price": 1599,
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2026-10-06T00:00:00.000Z",
+    "images": [],
+    "variants": [
+      {
+        "id": 97,
+        "size": "XS",
+        "color": "Ivory",
+        "color_hex": "#fffbeb",
+        "sku": "CLT-013-IVO-XS",
+        "stock": 6,
+        "price": 1599
+      },
+      {
+        "id": 98,
+        "size": "S",
+        "color": "Ivory",
+        "color_hex": "#fffbeb",
+        "sku": "CLT-013-IVO-S",
+        "stock": 9,
+        "price": 1599
+      },
+      {
+        "id": 99,
+        "size": "M",
+        "color": "Ivory",
+        "color_hex": "#fffbeb",
+        "sku": "CLT-013-IVO-M",
+        "stock": 12,
+        "price": 1599
+      },
+      {
+        "id": 100,
+        "size": "L",
+        "color": "Ivory",
+        "color_hex": "#fffbeb",
+        "sku": "CLT-013-IVO-L",
+        "stock": 2,
+        "price": 1599
+      },
+      {
+        "id": 101,
+        "size": "XS",
+        "color": "Emerald",
+        "color_hex": "#047857",
+        "sku": "CLT-013-EME-XS",
+        "stock": 11,
+        "price": 1599
+      },
+      {
+        "id": 102,
+        "size": "S",
+        "color": "Emerald",
+        "color_hex": "#047857",
+        "sku": "CLT-013-EME-S",
+        "stock": 1,
+        "price": 1599
+      },
+      {
+        "id": 103,
+        "size": "M",
+        "color": "Emerald",
+        "color_hex": "#047857",
+        "sku": "CLT-013-EME-M",
+        "stock": 4,
+        "price": 1599
+      },
+      {
+        "id": 104,
+        "size": "L",
+        "color": "Emerald",
+        "color_hex": "#047857",
+        "sku": "CLT-013-EME-L",
+        "stock": 7,
+        "price": 1599
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "name": "High-Rise Mom Jeans",
+    "slug": "high-rise-mom-jeans",
+    "description": "Vintage-inspired high-rise mom jeans with tapered leg.",
+    "category": {
+      "id": 9,
+      "name": "Jeans",
+      "slug": "women-jeans"
+    },
+    "base_price": 2199,
+    "is_active": true,
+    "is_featured": false,
+    "created_at": "2026-10-04T00:00:00.000Z",
+    "images": [],
+    "variants": [
+      {
+        "id": 105,
+        "size": "26",
+        "color": "Light Blue",
+        "color_hex": "#93c5fd",
+        "sku": "CLT-014-LIG-26",
+        "stock": 0,
+        "price": 2199
+      },
+      {
+        "id": 106,
+        "size": "28",
+        "color": "Light Blue",
+        "color_hex": "#93c5fd",
+        "sku": "CLT-014-LIG-28",
+        "stock": 3,
+        "price": 2199
+      },
+      {
+        "id": 107,
+        "size": "30",
+        "color": "Light Blue",
+        "color_hex": "#93c5fd",
+        "sku": "CLT-014-LIG-30",
+        "stock": 6,
+        "price": 2199
+      },
+      {
+        "id": 108,
+        "size": "32",
+        "color": "Light Blue",
+        "color_hex": "#93c5fd",
+        "sku": "CLT-014-LIG-32",
+        "stock": 9,
+        "price": 2199
+      },
+      {
+        "id": 109,
+        "size": "26",
+        "color": "Indigo",
+        "color_hex": "#312e81",
+        "sku": "CLT-014-IND-26",
+        "stock": 5,
+        "price": 2199
+      },
+      {
+        "id": 110,
+        "size": "28",
+        "color": "Indigo",
+        "color_hex": "#312e81",
+        "sku": "CLT-014-IND-28",
+        "stock": 8,
+        "price": 2199
+      },
+      {
+        "id": 111,
+        "size": "30",
+        "color": "Indigo",
+        "color_hex": "#312e81",
+        "sku": "CLT-014-IND-30",
+        "stock": 11,
+        "price": 2199
+      },
+      {
+        "id": 112,
+        "size": "32",
+        "color": "Indigo",
+        "color_hex": "#312e81",
+        "sku": "CLT-014-IND-32",
+        "stock": 1,
+        "price": 2199
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "name": "Dino Print Kids Tee",
+    "slug": "dino-print-kids-tee",
+    "description": "Fun dinosaur print tee in soft, skin-friendly cotton.",
+    "category": {
+      "id": 10,
+      "name": "T-Shirts",
+      "slug": "kids-tshirts"
+    },
+    "base_price": 449,
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2026-10-02T00:00:00.000Z",
+    "images": [],
+    "variants": [
+      {
+        "id": 113,
+        "size": "4Y",
+        "color": "Green",
+        "color_hex": "#22c55e",
+        "sku": "CLT-015-GRE-4Y",
+        "stock": 7,
+        "price": 449
+      },
+      {
+        "id": 114,
+        "size": "6Y",
+        "color": "Green",
+        "color_hex": "#22c55e",
+        "sku": "CLT-015-GRE-6Y",
+        "stock": 10,
+        "price": 449
+      },
+      {
+        "id": 115,
+        "size": "8Y",
+        "color": "Green",
+        "color_hex": "#22c55e",
+        "sku": "CLT-015-GRE-8Y",
+        "stock": 0,
+        "price": 449
+      },
+      {
+        "id": 116,
+        "size": "10Y",
+        "color": "Green",
+        "color_hex": "#22c55e",
+        "sku": "CLT-015-GRE-10Y",
+        "stock": 3,
+        "price": 449
+      },
+      {
+        "id": 117,
+        "size": "4Y",
+        "color": "Yellow",
+        "color_hex": "#facc15",
+        "sku": "CLT-015-YEL-4Y",
+        "stock": 12,
+        "price": 449
+      },
+      {
+        "id": 118,
+        "size": "6Y",
+        "color": "Yellow",
+        "color_hex": "#facc15",
+        "sku": "CLT-015-YEL-6Y",
+        "stock": 2,
+        "price": 449
+      },
+      {
+        "id": 119,
+        "size": "8Y",
+        "color": "Yellow",
+        "color_hex": "#facc15",
+        "sku": "CLT-015-YEL-8Y",
+        "stock": 5,
+        "price": 449
+      },
+      {
+        "id": 120,
+        "size": "10Y",
+        "color": "Yellow",
+        "color_hex": "#facc15",
+        "sku": "CLT-015-YEL-10Y",
+        "stock": 8,
+        "price": 449
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "name": "Rainbow Stripe Kids Tee",
+    "slug": "rainbow-stripe-kids-tee",
+    "description": "Bright striped tee kids love to wear.",
+    "category": {
+      "id": 10,
+      "name": "T-Shirts",
+      "slug": "kids-tshirts"
+    },
+    "base_price": 499,
+    "is_active": true,
+    "is_featured": false,
+    "created_at": "2026-09-30T00:00:00.000Z",
+    "images": [],
+    "variants": [
+      {
+        "id": 121,
+        "size": "4Y",
+        "color": "White",
+        "color_hex": "#f9fafb",
+        "sku": "CLT-016-WHI-4Y",
+        "stock": 1,
+        "price": 499
+      },
+      {
+        "id": 122,
+        "size": "6Y",
+        "color": "White",
+        "color_hex": "#f9fafb",
+        "sku": "CLT-016-WHI-6Y",
+        "stock": 4,
+        "price": 499
+      },
+      {
+        "id": 123,
+        "size": "8Y",
+        "color": "White",
+        "color_hex": "#f9fafb",
+        "sku": "CLT-016-WHI-8Y",
+        "stock": 7,
+        "price": 499
+      },
+      {
+        "id": 124,
+        "size": "10Y",
+        "color": "White",
+        "color_hex": "#f9fafb",
+        "sku": "CLT-016-WHI-10Y",
+        "stock": 10,
+        "price": 499
+      },
+      {
+        "id": 125,
+        "size": "4Y",
+        "color": "Navy",
+        "color_hex": "#1e3a8a",
+        "sku": "CLT-016-NAV-4Y",
+        "stock": 6,
+        "price": 499
+      },
+      {
+        "id": 126,
+        "size": "6Y",
+        "color": "Navy",
+        "color_hex": "#1e3a8a",
+        "sku": "CLT-016-NAV-6Y",
+        "stock": 9,
+        "price": 499
+      },
+      {
+        "id": 127,
+        "size": "8Y",
+        "color": "Navy",
+        "color_hex": "#1e3a8a",
+        "sku": "CLT-016-NAV-8Y",
+        "stock": 12,
+        "price": 499
+      },
+      {
+        "id": 128,
+        "size": "10Y",
+        "color": "Navy",
+        "color_hex": "#1e3a8a",
+        "sku": "CLT-016-NAV-10Y",
+        "stock": 2,
+        "price": 499
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "name": "Cozy Zip Hoodie",
+    "slug": "cozy-zip-hoodie",
+    "description": "Fleece-lined zip hoodie to keep little ones warm.",
+    "category": {
+      "id": 11,
+      "name": "Hoodies",
+      "slug": "kids-hoodies"
+    },
+    "base_price": 999,
+    "is_active": true,
+    "is_featured": false,
+    "created_at": "2026-09-28T00:00:00.000Z",
+    "images": [],
+    "variants": [
+      {
+        "id": 129,
+        "size": "4Y",
+        "color": "Red",
+        "color_hex": "#dc2626",
+        "sku": "CLT-017-RED-4Y",
+        "stock": 8,
+        "price": 999
+      },
+      {
+        "id": 130,
+        "size": "6Y",
+        "color": "Red",
+        "color_hex": "#dc2626",
+        "sku": "CLT-017-RED-6Y",
+        "stock": 11,
+        "price": 999
+      },
+      {
+        "id": 131,
+        "size": "8Y",
+        "color": "Red",
+        "color_hex": "#dc2626",
+        "sku": "CLT-017-RED-8Y",
+        "stock": 1,
+        "price": 999
+      },
+      {
+        "id": 132,
+        "size": "10Y",
+        "color": "Red",
+        "color_hex": "#dc2626",
+        "sku": "CLT-017-RED-10Y",
+        "stock": 4,
+        "price": 999
+      },
+      {
+        "id": 133,
+        "size": "4Y",
+        "color": "Navy",
+        "color_hex": "#1e3a8a",
+        "sku": "CLT-017-NAV-4Y",
+        "stock": 0,
+        "price": 999
+      },
+      {
+        "id": 134,
+        "size": "6Y",
+        "color": "Navy",
+        "color_hex": "#1e3a8a",
+        "sku": "CLT-017-NAV-6Y",
+        "stock": 3,
+        "price": 999
+      },
+      {
+        "id": 135,
+        "size": "8Y",
+        "color": "Navy",
+        "color_hex": "#1e3a8a",
+        "sku": "CLT-017-NAV-8Y",
+        "stock": 6,
+        "price": 999
+      },
+      {
+        "id": 136,
+        "size": "10Y",
+        "color": "Navy",
+        "color_hex": "#1e3a8a",
+        "sku": "CLT-017-NAV-10Y",
+        "stock": 9,
+        "price": 999
+      }
+    ]
+  }
+]

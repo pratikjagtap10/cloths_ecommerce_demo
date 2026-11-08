@@ -1,0 +1,78 @@
+// shop-db: owned ONLY by shop-service (database-per-service).
+// user_id / variant_id / order_id are plain integers: those rows live in core-db,
+// so there are no foreign keys across services.
+
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../generated/client"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("SHOP_DATABASE_URL")
+}
+
+model Cart {
+  id        Int        @id @default(autoincrement())
+  userId    Int        @unique @map("user_id")
+  createdAt DateTime   @default(now()) @map("created_at")
+  items     CartItem[]
+
+  @@map("carts")
+}
+
+// Product info is copied from core-service when the item is added (snapshot),
+// so showing the cart never needs a call to core-service.
+model CartItem {
+  id          Int      @id @default(autoincrement())
+  cartId      Int      @map("cart_id")
+  cart        Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  variantId   Int      @map("variant_id")
+  quantity    Int
+  unitPrice   Int      @map("unit_price")
+  productName String   @map("product_name")
+  productSlug String   @map("product_slug")
+  size        String
+  color       String
+  colorHex    String   @map("color_hex")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@unique([cartId, variantId])
+  @@map("cart_items")
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+
+  @@map("payment_status")
+}
+
+model Payment {
+  id          Int           @id @default(autoincrement())
+  orderId     Int           @unique @map("order_id")
+  userId      Int           @map("user_id")
+  amount      Int
+  status      PaymentStatus @default(PENDING)
+  providerRef String?       @map("provider_ref")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("payments")
+}
+
+// Transactional outbox: the event is saved in the SAME transaction as the payment,
+// then a relay publishes it to Redis. If Redis is down, it is sent later: never lost.
+model OutboxEvent {
+  id          String    @id // event id (UUID)
+  type        String
+  payload     Json
+  createdAt   DateTime  @default(now()) @map("created_at")
+  publishedAt DateTime? @map("published_at")
+
+  @@index([publishedAt, createdAt])
+  @@map("outbox_events")
+}

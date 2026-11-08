@@ -1,0 +1,13 @@
+# Build context for the backend images is the repo root: keep it small
+**/node_modules
+**/dist
+**/generated
+**/.next
+frontend
+postman
+nginx
+*.md
+*.txt
+*.pdf
+.env
+.git

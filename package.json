@@ -1,0 +1,26 @@
+{
+  "name": "threads-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Threads cloth store - Node.js + Express microservices backend",
+  "workspaces": [
+    "packages/*",
+    "services/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "npm run build -w @threads/shared && npm run build -w @threads/core-service -w @threads/shop-service",
+    "typecheck": "npm run build -w @threads/shared && npm run typecheck -w @threads/core-service -w @threads/shop-service",
+    "test": "npm run build -w @threads/shared && npm test -w @threads/shared -w @threads/core-service -w @threads/shop-service",
+    "format": "prettier --write \"packages/*/src/**/*.ts\" \"services/*/src/**/*.ts\" \"services/*/test/**/*.ts\"",
+    "contract-test": "npx --yes newman@6 run postman/Threads-Backend.postman_collection.json -e postman/Threads-Local.postman_environment.json"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.0",
+    "prettier": "^3.5.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.2.0"
+  }
+}

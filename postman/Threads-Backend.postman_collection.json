@@ -1,0 +1,426 @@
+{
+  "info": {
+    "_postman_id": "0c7e6a52-5d1f-4f1b-8f57-threads-backend",
+    "name": "Threads Backend (Local)",
+    "description": "End-to-end tests for the Threads microservices.\n\nRun the folders top to bottom (or use Collection Runner): each request saves values (tokens, ids) that the next requests use.\n\n* {{base_url}}  = Nginx API gateway (http://localhost)\n* {{core_url}}  = Django core service directly (http://localhost:8000)\n* {{shop_url}}  = FastAPI shop service directly (http://localhost:8001)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "0. Health",
+      "description": "Are the services up? Both should return status ok.",
+      "item": [
+        {
+          "name": "Core service health",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('database ok', () => pm.expect(pm.response.json().database).to.eql('ok'));"
+          ] } }],
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "header": [], "url": "{{base_url}}/api/core/health/" }
+        },
+        {
+          "name": "Shop service health",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "const body = pm.response.json();",
+            "pm.test('database and redis ok', () => { pm.expect(body.database).to.eql('ok'); pm.expect(body.redis).to.eql('ok'); });"
+          ] } }],
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "header": [], "url": "{{base_url}}/api/shop/health/" }
+        }
+      ]
+    },
+    {
+      "name": "1. Auth (Django core)",
+      "description": "Register, log in (JWT), read profile, refresh token.",
+      "item": [
+        {
+          "name": "Register new user",
+          "event": [
+            { "listen": "prerequest", "script": { "type": "text/javascript", "exec": [
+              "pm.collectionVariables.set('new_email', `user${Date.now()}@example.com`);"
+            ] } },
+            { "listen": "test", "script": { "type": "text/javascript", "exec": [
+              "pm.test('201 Created', () => pm.response.to.have.status(201));",
+              "const user = pm.response.json();",
+              "pm.test('returns user without password', () => {",
+              "  pm.expect(user).to.have.keys('id', 'email', 'first_name', 'last_name');",
+              "  pm.expect(user.email).to.eql(pm.collectionVariables.get('new_email'));",
+              "});"
+            ] } }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{new_email}}\",\n  \"password\": \"Str0ng-Passw0rd!\",\n  \"first_name\": \"Postman\",\n  \"last_name\": \"Tester\"\n}" },
+            "url": "{{base_url}}/api/core/auth/register/"
+          }
+        },
+        {
+          "name": "Register duplicate email (expect 400)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('400 Bad Request', () => pm.response.to.have.status(400));",
+            "pm.test('readable error detail', () => pm.expect(pm.response.json().detail).to.include('already exists'));"
+          ] } }],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"Str0ng-Passw0rd!\",\n  \"first_name\": \"Dup\",\n  \"last_name\": \"User\"\n}" },
+            "url": "{{base_url}}/api/core/auth/register/"
+          }
+        },
+        {
+          "name": "Login wrong password (expect 401)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('401 Unauthorized', () => pm.response.to.have.status(401));",
+            "pm.test('detail message', () => pm.expect(pm.response.json().detail).to.eql('Invalid email or password.'));"
+          ] } }],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"wrong-password\"\n}" },
+            "url": "{{base_url}}/api/core/auth/login/"
+          }
+        },
+        {
+          "name": "Login (saves tokens)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "const body = pm.response.json();",
+            "pm.test('access and refresh tokens returned', () => { pm.expect(body.access).to.be.a('string'); pm.expect(body.refresh).to.be.a('string'); });",
+            "pm.environment.set('access_token', body.access);",
+            "pm.environment.set('refresh_token', body.refresh);"
+          ] } }],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}" },
+            "url": "{{base_url}}/api/core/auth/login/"
+          }
+        },
+        {
+          "name": "Me (needs token)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('correct user', () => pm.expect(pm.response.json().email).to.eql(pm.environment.get('email')));"
+          ] } }],
+          "request": { "method": "GET", "header": [], "url": "{{base_url}}/api/core/auth/me/" }
+        },
+        {
+          "name": "Me without token (expect 401)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('401 Unauthorized', () => pm.response.to.have.status(401));"
+          ] } }],
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "header": [], "url": "{{base_url}}/api/core/auth/me/" }
+        },
+        {
+          "name": "Refresh access token",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "const body = pm.response.json();",
+            "pm.test('new access token', () => pm.expect(body.access).to.be.a('string'));",
+            "pm.environment.set('access_token', body.access);"
+          ] } }],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}" },
+            "url": "{{base_url}}/api/core/auth/refresh/"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Catalog (Django core)",
+      "description": "Public endpoints: no token needed.",
+      "item": [
+        {
+          "name": "List categories",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "const cats = pm.response.json();",
+            "pm.test('array of categories with parent field', () => { pm.expect(cats).to.be.an('array').that.is.not.empty; pm.expect(cats[0]).to.have.keys('id', 'name', 'slug', 'parent'); });"
+          ] } }],
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "header": [], "url": "{{base_url}}/api/core/categories/" }
+        },
+        {
+          "name": "List products (page 1)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "const page = pm.response.json();",
+            "pm.test('paginated response, 8 per page', () => { pm.expect(page).to.have.keys('count', 'next', 'previous', 'results'); pm.expect(page.results.length).to.be.at.most(8); });",
+            "// Save the variant with the most stock for the cart tests",
+            "let best = null;",
+            "page.results.forEach(p => p.variants.forEach(v => { if (!best || v.stock > best.v.stock) best = { p, v }; }));",
+            "pm.environment.set('product_slug', best.p.slug);",
+            "pm.environment.set('variant_id', best.v.id);",
+            "pm.environment.set('variant_stock', best.v.stock);",
+            "console.log(`Using ${best.p.name} ${best.v.color}/${best.v.size}, stock ${best.v.stock}`);"
+          ] } }],
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "header": [], "url": "{{base_url}}/api/core/products/" }
+        },
+        {
+          "name": "Filter: men, size M, cheapest first",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "const results = pm.response.json().results;",
+            "pm.test('every product has a size M variant', () => results.forEach(p => pm.expect(p.variants.map(v => v.size)).to.include('M')));",
+            "pm.test('sorted by price ascending', () => { const prices = results.map(p => p.base_price); pm.expect(prices).to.eql([...prices].sort((a, b) => a - b)); });"
+          ] } }],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/core/products/?category=men&size=M&ordering=price"
+          }
+        },
+        {
+          "name": "Search: linen",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('all results mention linen', () => pm.response.json().results.forEach(p => pm.expect((p.name + p.description).toLowerCase()).to.include('linen')));"
+          ] } }],
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "header": [], "url": "{{base_url}}/api/core/products/?search=linen" }
+        },
+        {
+          "name": "Product detail",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "const p = pm.response.json();",
+            "pm.test('nested category and variants', () => { pm.expect(p.category).to.have.keys('id', 'name', 'slug'); pm.expect(p.variants[0]).to.include.keys('id', 'size', 'color', 'stock', 'price'); });"
+          ] } }],
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "header": [], "url": "{{base_url}}/api/core/products/{{product_slug}}/" }
+        },
+        {
+          "name": "Unknown product (expect 404)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('404 Not Found', () => pm.response.to.have.status(404));"
+          ] } }],
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "header": [], "url": "{{base_url}}/api/core/products/does-not-exist/" }
+        }
+      ]
+    },
+    {
+      "name": "3. Cart (FastAPI shop)",
+      "description": "The shop service verifies the JWT issued by Django and asks Django for stock/price before adding items.",
+      "item": [
+        {
+          "name": "Cart without token (expect 401)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('401 Unauthorized', () => pm.response.to.have.status(401));",
+            "pm.test('detail message', () => pm.expect(pm.response.json().detail).to.eql('Please log in to continue.'));"
+          ] } }],
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "header": [], "url": "{{base_url}}/api/shop/cart/" }
+        },
+        {
+          "name": "Add item to cart",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "const cart = pm.response.json();",
+            "const item = cart.items.find(i => i.variant_id == pm.environment.get('variant_id'));",
+            "pm.test('item is in the cart', () => pm.expect(item).to.exist);",
+            "pm.test('subtotal = sum of lines', () => pm.expect(cart.subtotal).to.eql(cart.items.reduce((s, i) => s + i.unit_price * i.quantity, 0)));",
+            "pm.environment.set('cart_item_id', item.id);"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"variant_id\": {{variant_id}},\n  \"quantity\": 1\n}" },
+            "url": "{{base_url}}/api/shop/cart/items/"
+          }
+        },
+        {
+          "name": "Add more than stock (expect 400)",
+          "event": [
+            { "listen": "prerequest", "script": { "type": "text/javascript", "exec": [
+              "pm.collectionVariables.set('too_many', Math.min(Number(pm.environment.get('variant_stock')) + 1, 20));"
+            ] } },
+            { "listen": "test", "script": { "type": "text/javascript", "exec": [
+              "pm.test('400 Bad Request', () => pm.response.to.have.status(400));",
+              "pm.test('stock message', () => pm.expect(pm.response.json().detail).to.include('left in stock'));"
+            ] } }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"variant_id\": {{variant_id}},\n  \"quantity\": {{too_many}}\n}" },
+            "url": "{{base_url}}/api/shop/cart/items/"
+          }
+        },
+        {
+          "name": "Update quantity",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "const item = pm.response.json().items.find(i => i.id == pm.environment.get('cart_item_id'));",
+            "pm.test('quantity updated to 2', () => pm.expect(item.quantity).to.eql(2));"
+          ] } }],
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"quantity\": 2\n}" },
+            "url": "{{base_url}}/api/shop/cart/items/{{cart_item_id}}/"
+          }
+        },
+        {
+          "name": "Get my cart",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('cart has items', () => pm.expect(pm.response.json().items).to.not.be.empty);"
+          ] } }],
+          "request": { "method": "GET", "header": [], "url": "{{base_url}}/api/shop/cart/" }
+        }
+      ]
+    },
+    {
+      "name": "4. Checkout & payment (FastAPI -> Django -> Redis)",
+      "description": "Checkout calls Django to create the order (sync REST). A successful payment publishes payment.succeeded to Redis; the Django worker then marks the order PAID (async event).",
+      "item": [
+        {
+          "name": "Checkout with invalid address (expect 422)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('422 Unprocessable Entity', () => pm.response.to.have.status(422));",
+            "pm.test('readable detail', () => pm.expect(pm.response.json().detail).to.eql('Phone: Enter a valid 10-digit mobile number'));"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"address\": {\n    \"full_name\": \"Demo User\",\n    \"phone\": \"12345\",\n    \"line1\": \"12 MG Road\",\n    \"city\": \"Pune\",\n    \"state\": \"Maharashtra\",\n    \"postal_code\": \"411001\"\n  }\n}" },
+            "url": "{{base_url}}/api/shop/checkout/"
+          }
+        },
+        {
+          "name": "Checkout (creates order + payment)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('201 Created', () => pm.response.to.have.status(201));",
+            "const { order, payment } = pm.response.json();",
+            "pm.test('order is PENDING', () => pm.expect(order.status).to.eql('PENDING'));",
+            "pm.test('payment amount = order total', () => pm.expect(payment.amount).to.eql(order.total));",
+            "pm.test('total = subtotal + shipping', () => pm.expect(order.total).to.eql(order.subtotal + order.shipping_fee));",
+            "pm.environment.set('order_id', order.id);",
+            "pm.environment.set('payment_id', payment.id);"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"address\": {\n    \"full_name\": \"Demo User\",\n    \"phone\": \"9876543210\",\n    \"line1\": \"12 MG Road\",\n    \"city\": \"Pune\",\n    \"state\": \"Maharashtra\",\n    \"postal_code\": \"411001\"\n  }\n}" },
+            "url": "{{base_url}}/api/shop/checkout/"
+          }
+        },
+        {
+          "name": "Pay - simulate failure",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('payment FAILED', () => pm.expect(pm.response.json().status).to.eql('FAILED'));"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"success\": false\n}" },
+            "url": "{{base_url}}/api/shop/payments/{{payment_id}}/confirm/"
+          }
+        },
+        {
+          "name": "Pay - success (publishes event)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('payment SUCCESS', () => pm.expect(pm.response.json().status).to.eql('SUCCESS'));"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"success\": true\n}" },
+            "url": "{{base_url}}/api/shop/payments/{{payment_id}}/confirm/"
+          }
+        },
+        {
+          "name": "Order is now PAID (set by the event)",
+          "event": [
+            { "listen": "prerequest", "script": { "type": "text/javascript", "exec": [
+              "// The event is processed asynchronously by the core_worker; give it a moment",
+              "setTimeout(() => {}, 1500);"
+            ] } },
+            { "listen": "test", "script": { "type": "text/javascript", "exec": [
+              "pm.test('200 OK', () => pm.response.to.have.status(200));",
+              "pm.test('order status is PAID', () => pm.expect(pm.response.json().status).to.eql('PAID'));"
+            ] } }
+          ],
+          "request": { "method": "GET", "header": [], "url": "{{base_url}}/api/core/orders/{{order_id}}/" }
+        },
+        {
+          "name": "Cart is empty after payment",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('cart emptied', () => pm.expect(pm.response.json().items).to.be.empty);"
+          ] } }],
+          "request": { "method": "GET", "header": [], "url": "{{base_url}}/api/shop/cart/" }
+        }
+      ]
+    },
+    {
+      "name": "5. Orders (Django core)",
+      "item": [
+        {
+          "name": "My orders",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "const orders = pm.response.json();",
+            "pm.test('contains the new order', () => pm.expect(orders.map(o => o.id)).to.include(Number(pm.environment.get('order_id'))));",
+            "pm.test('newest first', () => pm.expect(orders[0].id).to.eql(Number(pm.environment.get('order_id'))));"
+          ] } }],
+          "request": { "method": "GET", "header": [], "url": "{{base_url}}/api/core/orders/" }
+        },
+        {
+          "name": "Order without token (expect 401)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('401 Unauthorized', () => pm.response.to.have.status(401));"
+          ] } }],
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "header": [], "url": "{{base_url}}/api/core/orders/{{order_id}}/" }
+        }
+      ]
+    },
+    {
+      "name": "6. Internal APIs (service-to-service)",
+      "description": "Normally only the shop service calls these. They are blocked at the gateway, so these requests go to the core service directly on port 8000.",
+      "item": [
+        {
+          "name": "Blocked at gateway (expect 404)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('404 from Nginx', () => pm.response.to.have.status(404));"
+          ] } }],
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "header": [], "url": "{{base_url}}/internal/variants/{{variant_id}}/" }
+        },
+        {
+          "name": "Variant without internal key (expect 403)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('403 Forbidden', () => pm.response.to.have.status(403));"
+          ] } }],
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "header": [], "url": "{{core_url}}/internal/variants/{{variant_id}}/" }
+        },
+        {
+          "name": "Variant with internal key",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('price and stock returned', () => pm.expect(pm.response.json()).to.include.keys('price', 'stock', 'product_name', 'is_active'));"
+          ] } }],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [{ "key": "X-Internal-Key", "value": "{{internal_api_key}}" }],
+            "url": "{{core_url}}/internal/variants/{{variant_id}}/"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "new_email", "value": "" },
+    { "key": "too_many", "value": "" }
+  ]
+}

@@ -1,0 +1,14 @@
+[
+  { "id": 1, "name": "Men", "slug": "men", "parent": null },
+  { "id": 2, "name": "Women", "slug": "women", "parent": null },
+  { "id": 3, "name": "Kids", "slug": "kids", "parent": null },
+  { "id": 4, "name": "T-Shirts", "slug": "men-tshirts", "parent": 1 },
+  { "id": 5, "name": "Shirts", "slug": "men-shirts", "parent": 1 },
+  { "id": 6, "name": "Jeans", "slug": "men-jeans", "parent": 1 },
+  { "id": 12, "name": "Jackets", "slug": "men-jackets", "parent": 1 },
+  { "id": 7, "name": "Dresses", "slug": "women-dresses", "parent": 2 },
+  { "id": 8, "name": "Tops", "slug": "women-tops", "parent": 2 },
+  { "id": 9, "name": "Jeans", "slug": "women-jeans", "parent": 2 },
+  { "id": 10, "name": "T-Shirts", "slug": "kids-tshirts", "parent": 3 },
+  { "id": 11, "name": "Hoodies", "slug": "kids-hoodies", "parent": 3 }
+]

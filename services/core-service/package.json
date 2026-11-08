@@ -1,0 +1,37 @@
+{
+  "name": "@threads/core-service",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Users + JWT auth, catalog, orders, internal API, admin endpoints; core-worker event consumer",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "prisma generate && tsc -p tsconfig.json",
+    "typecheck": "prisma generate && tsc -p tsconfig.json --noEmit",
+    "start": "node dist/server.js",
+    "start:worker": "node dist/worker.js",
+    "dev": "tsx watch --env-file=../../.env.local src/server.ts",
+    "dev:worker": "tsx watch --env-file=../../.env.local src/worker.ts",
+    "migrate:dev": "node --env-file=../../.env.local ../../node_modules/prisma/build/index.js migrate dev",
+    "studio": "node --env-file=../../.env.local ../../node_modules/prisma/build/index.js studio",
+    "migrate:deploy": "prisma migrate deploy",
+    "seed": "tsx --env-file=../../.env.local src/seed.ts",
+    "seed:force": "tsx --env-file=../../.env.local src/seed.ts --force",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.16.0",
+    "@threads/shared": "*",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "ioredis": "^5.6.0",
+    "prisma": "^6.16.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "tsx": "^4.20.0"
+  }
+}
