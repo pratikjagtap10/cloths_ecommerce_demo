@@ -11,6 +11,7 @@ docker compose up --build -d      ->  http://localhost
 | Document | For |
 |---|---|
 | **README.md** (this file) | Architecture overview and running the app with Docker |
+| [INTERVIEW_QUESTIONS_AND_ANSWERS.md](INTERVIEW_QUESTIONS_AND_ANSWERS.md) | 100+ interview questions with answers based on this codebase (architecture, Node, security, DB, events, frontend, Docker, trade-offs) |
 | [DEMO_PRESENTATION_SCRIPT.md](DEMO_PRESENTATION_SCRIPT.md) | 20–25 minute live demo: preparation, talk track, resilience demos, Q&A cheat sheet |
 | [JUNIOR_DEVELOPER_DOCKER_GUIDE.md](JUNIOR_DEVELOPER_DOCKER_GUIDE.md) | Step-by-step demo on your laptop: ports explained, demo script, viewing the database tables |
 | [BACKEND_DEVELOPER_GUIDE.md](BACKEND_DEVELOPER_GUIDE.md) | Backend developers: code layout, commands, API, events, migrations, testing |
