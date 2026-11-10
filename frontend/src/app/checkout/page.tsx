@@ -12,6 +12,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { api, errorMessage } from "@/lib/api";
 import { formatPrice, shippingFor } from "@/lib/format";
+import { checkoutKey, clearCheckoutKey, paymentKey } from "@/lib/idempotency";
 import type { CheckoutResult } from "@/types";
 
 const addressSchema = z.object({
@@ -53,22 +54,25 @@ export default function CheckoutPage() {
     resetOptions: { keepDirtyValues: true },
   });
 
+  // Idempotency keys: if a request is repeated (slow network retry, double submit, refresh),
+  // the backend returns the first result instead of creating a second order or payment.
   const placeOrder = async (address: AddressForm) => {
     setError(null);
     try {
-      setResult(await api.checkout(address));
+      setResult(await api.checkout(address, checkoutKey(cart.items, address)));
     } catch (e) {
       setError(errorMessage(e));
     }
   };
 
   const pay = async (success: boolean) => {
-    if (!result) return;
+    if (!result || paying) return;
     setPaying(true);
     setError(null);
     try {
-      const payment = await api.confirmPayment(result.payment.id, success);
+      const payment = await api.confirmPayment(result.payment.id, success, paymentKey(result.payment.id, success));
       if (payment.status === "SUCCESS") {
+        clearCheckoutKey(); // next purchase gets a new key
         await refresh(); // the cart was cleared by the "payment.succeeded" flow
         router.push(`/orders/${result.order.id}?placed=1`);
       } else {

@@ -63,6 +63,36 @@ const toQueryString = (q: ProductQuery) => {
 
 const json = (body: unknown) => JSON.stringify(body);
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+const IN_PROGRESS = "already being processed"; // shop-service's 409 for a duplicate still running
+
+/**
+ * POST with an Idempotency-Key, retried automatically with the SAME key when:
+ *  - the network failed (fetch threw: offline, connection dropped; maybe the server got it)
+ *  - the gateway/service answered 502/503/504
+ *  - the first identical request is still being processed (409)
+ * Because the key is the same, the backend never runs the action twice.
+ */
+async function idempotentPost<T>(path: string, body: unknown, key?: string): Promise<T> {
+  const init: RequestInit = { method: "POST", body: json(body), headers: key ? { "Idempotency-Key": key } : {} };
+  if (!key) return request<T>(path, init);
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await request<T>(path, init);
+    } catch (e) {
+      const networkError = e instanceof TypeError;
+      const retryable =
+        networkError ||
+        (e instanceof ApiError && ([502, 503, 504].includes(e.status) || (e.status === 409 && e.message.includes(IN_PROGRESS))));
+      if (!retryable || attempt >= 3) {
+        if (networkError) throw new ApiError(0, "Network problem. Please check your connection and try again.");
+        throw e;
+      }
+      await sleep(1000 * attempt); // 1 s, then 2 s
+    }
+  }
+}
+
 async function orNull<T>(p: Promise<T>): Promise<T | null> {
   try {
     return await p;
@@ -86,9 +116,8 @@ export const httpApi: ApiClient = {
   updateCartItem: (id, quantity) =>
     request(`/shop/cart/items/${id}/`, { method: "PATCH", body: json({ quantity }) }),
   removeCartItem: (id) => request(`/shop/cart/items/${id}/`, { method: "DELETE" }),
-  checkout: (address) => request("/shop/checkout/", { method: "POST", body: json({ address }) }),
-  confirmPayment: (id, success) =>
-    request(`/shop/payments/${id}/confirm/`, { method: "POST", body: json({ success }) }),
+  checkout: (address, key) => idempotentPost("/shop/checkout/", { address }, key),
+  confirmPayment: (id, success, key) => idempotentPost(`/shop/payments/${id}/confirm/`, { success }, key),
   getOrders: () => request("/core/orders/"),
   getOrder: (id) => orNull(request(`/core/orders/${id}/`)),
 };

@@ -10,6 +10,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../../db";
 import { outbox } from "../../events/outbox";
+import { idempotent } from "../../lib/idempotency";
 import { notify } from "../../notifications";
 import { paymentJson } from "./serializers";
 
@@ -29,7 +30,9 @@ const confirmSchema = z.object({
   success: z.boolean({ required_error: REQUIRED, invalid_type_error: "Must be true or false." }),
 });
 
-paymentsRouter.post("/:id/confirm", async (req, res) => {
+// Already safe to repeat by its own logic (a SUCCESS payment is never processed twice);
+// `idempotent` additionally replays the exact first response for a repeated Idempotency-Key.
+paymentsRouter.post("/:id/confirm", idempotent, async (req, res) => {
   const user = currentUser(req);
   const payment = await ownPayment(user.id, req.params.id);
   const { success } = parse(confirmSchema, req.body);

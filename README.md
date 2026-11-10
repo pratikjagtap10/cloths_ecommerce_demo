@@ -104,6 +104,7 @@ docker compose up --build -d      ->  http://localhost
 | **`SELECT … FOR UPDATE` on variants at checkout** | Two people can't both buy the last item. |
 | **Transactional outbox** (shop) | The payment status and the "payment.succeeded" event are saved in one DB transaction. If Redis is down at that moment, the relay publishes the event later, so it is never lost. |
 | **Idempotent consumer** (`processed_events` table) | Streams deliver at least once. The event id is stored in the same transaction as the PAID update, so a duplicate event changes nothing. |
+| **Idempotency-Keys** on checkout and payment | The frontend sends a key per action. A repeated request (slow network retry, double submit, page refresh) gets the first response back instead of creating a second order or payment. The key is passed down to core, so even a half-finished checkout can't create two orders. |
 | **Circuit breaker** (opossum) | When core-service is down, cart and checkout calls fail in ~5 ms with `503 "Catalog service is unavailable…"` instead of every user waiting for timeouts. |
 | **Same API contract as the Python edition** | The frontend and the Postman collection work **unchanged**. The Postman collection is the acceptance test: **61/61 assertions pass**. |
 

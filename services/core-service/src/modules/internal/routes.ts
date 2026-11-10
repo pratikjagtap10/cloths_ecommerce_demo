@@ -53,9 +53,28 @@ const createOrderSchema = z.object({
   ),
 });
 
+// Optional "Idempotency-Key" header (sent by shop-service): the same key returns the same
+// order, so shop-service can safely retry a checkout that timed out.
+const idempotencyKeySchema = z
+  .string()
+  .trim()
+  .min(8, "Must be 8-200 characters.")
+  .max(200, "Must be 8-200 characters.")
+  .optional();
+
 internalRouter.post("/orders", async (req, res) => {
   const input = parse(createOrderSchema, req.body);
-  const order = await createOrder(input);
+  const key = parse(z.object({ idempotency_key: idempotencyKeySchema }), {
+    idempotency_key: req.header("Idempotency-Key"),
+  }).idempotency_key;
+
+  const { order, replayed } = await createOrder(input, key);
+  if (replayed) {
+    req.log.info({ orderId: order.id }, "duplicate checkout request: returning the existing order");
+    res.setHeader("Idempotent-Replayed", "true");
+    res.status(200).json(orderJson(order));
+    return;
+  }
   req.log.info({ orderId: order.id, userId: order.userId, total: order.total }, "order created");
   res.status(201).json(orderJson(order));
 });

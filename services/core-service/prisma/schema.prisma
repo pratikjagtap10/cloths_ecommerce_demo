@@ -110,6 +110,9 @@ model Order {
   postalCode  String      @map("postal_code")
   createdAt   DateTime    @default(now()) @map("created_at")
   updatedAt   DateTime    @updatedAt @map("updated_at")
+  // Set by shop-service at checkout: the same key always returns this order instead of
+  // creating a duplicate (safe retries when the network is slow or a request times out)
+  idempotencyKey String?  @unique @map("idempotency_key")
   items       OrderItem[]
 
   @@index([userId, createdAt])

@@ -64,6 +64,33 @@ model Payment {
   @@map("payments")
 }
 
+enum IdempotencyStatus {
+  IN_PROGRESS
+  COMPLETED
+
+  @@map("idempotency_status")
+}
+
+// One row per "Idempotency-Key" a user sent to checkout / payment confirm.
+// A retry with the same key gets the stored response instead of running the action again.
+// Rows are deleted after 24 hours.
+model IdempotencyKey {
+  id           Int               @id @default(autoincrement())
+  userId       Int               @map("user_id")
+  key          String
+  endpoint     String // e.g. "POST /api/shop/checkout"
+  requestHash  String            @map("request_hash") // SHA-256 of endpoint + body
+  status       IdempotencyStatus @default(IN_PROGRESS)
+  responseCode Int?              @map("response_code")
+  responseBody Json?             @map("response_body")
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
+
+  @@unique([userId, key])
+  @@index([createdAt])
+  @@map("idempotency_keys")
+}
+
 // Transactional outbox: the event is saved in the SAME transaction as the payment,
 // then a relay publishes it to Redis. If Redis is down, it is sent later: never lost.
 model OutboxEvent {

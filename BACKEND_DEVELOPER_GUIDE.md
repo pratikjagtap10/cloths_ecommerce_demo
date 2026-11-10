@@ -176,9 +176,9 @@ id), `page`.
 | POST | `/api/shop/cart/items/` | `{variant_id, quantity}` | cart |
 | PATCH | `/api/shop/cart/items/:id/` | `{quantity}` | cart |
 | DELETE | `/api/shop/cart/items/:id/` | – | cart |
-| POST | `/api/shop/checkout/` | `{address:{full_name, phone, line1, city, state, postal_code}}` | 201 `{order, payment}` |
+| POST | `/api/shop/checkout/` | `{address:{full_name, phone, line1, city, state, postal_code}}` + optional `Idempotency-Key` header (5.4) | 201 `{order, payment}` |
 | GET | `/api/shop/payments/:id/` | – | payment |
-| POST | `/api/shop/payments/:id/confirm/` | `{success: true \| false}` | payment |
+| POST | `/api/shop/payments/:id/confirm/` | `{success: true \| false}` + optional `Idempotency-Key` header | payment |
 
 ### 5.3 Messages the frontend and Postman depend on (keep them exact)
 
@@ -194,6 +194,44 @@ id), `page`.
 | 409 | `<Product> (<Color> / <Size>) is no longer available in that quantity. Only N left.` |
 | 422 | `Phone: Enter a valid 10-digit mobile number` (checkout address) |
 | 503 | `Catalog service is unavailable. Please try again shortly.` |
+
+### 5.4 Idempotency-Key (checkout and payment confirm)
+
+`POST /api/shop/checkout/` and `POST /api/shop/payments/:id/confirm/` accept an optional header
+`Idempotency-Key: <8-100 chars: letters, digits, - _ : .>`. The frontend always sends one (a UUID per
+cart + address, and `payment-<id>-success|failure` per payment action).
+
+| Situation | Response |
+|---|---|
+| First request | Runs normally. The outcome is stored in shop-db `idempotency_keys`. |
+| Same key again, first one finished | The **stored response** (same status and body) with header `Idempotent-Replayed: true`. Nothing runs again. |
+| Same key while the first is still running | `409 "This request is already being processed…"` with `Retry-After: 1` |
+| Same key, different endpoint or body | `422 "Idempotency-Key: This key was already used for a different request."` |
+| Invalid key format | `400` |
+| First attempt ended in 400/401/404/422/5xx | The key is **forgotten**, so the client may fix the input and retry with the same key |
+| No header | Works exactly as before |
+
+Shop forwards the key to core (`POST /internal/orders/` with `Idempotency-Key: shop-checkout:<user>:<key>`).
+`orders.idempotency_key` is unique, so a repeated or concurrent call returns the existing order (200,
+`Idempotent-Replayed: true`), and the payment is upserted per order. This is also why shop-service
+may retry a **timed-out** order creation when a key is present. Keys are deleted after 24 hours (hourly
+cleanup), and an IN_PROGRESS key untouched for 60 s (crashed request) can be taken over.
+
+Code: [shop-service/src/lib/idempotency.ts](services/shop-service/src/lib/idempotency.ts) (middleware),
+[idempotencyKey.ts](services/shop-service/src/lib/idempotencyKey.ts) (pure rules, unit tested),
+[core orders/service.ts](services/core-service/src/modules/orders/service.ts) (`createOrder`),
+[frontend/src/lib/idempotency.ts](frontend/src/lib/idempotency.ts) and `idempotentPost` in
+[frontend/src/lib/httpApi.ts](frontend/src/lib/httpApi.ts).
+
+Try it:
+```bash
+KEY=$(uuidgen)   # or any unique string
+curl -i -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" -H "Idempotency-Key: $KEY" \
+  -d '{"address":{"full_name":"Demo User","phone":"9876543210","line1":"12 MG Road","city":"Pune","state":"Maharashtra","postal_code":"411001"}}' \
+  http://localhost/api/shop/checkout/      # run twice: same order id, 2nd has Idempotent-Replayed: true
+```
+
+### 5.5 Business rules
 
 Business rules: shipping is **free when subtotal ≥ 1999**, otherwise **99**. Access tokens last
 **30 min** and refresh tokens **7 days**. JWT claims are `user_id` (string), `token_type`, `email`,

@@ -11,13 +11,42 @@ export interface CreateOrderInput {
   address: { full_name: string; phone: string; line1: string; city: string; state: string; postal_code: string };
 }
 
+const findByKey = (idempotencyKey: string) =>
+  prisma.order.findUnique({ where: { idempotencyKey }, include: orderInclude });
+
+function sameUserOrConflict<T extends { userId: number }>(order: T, userId: number): T {
+  if (order.userId !== userId) {
+    throw new ApiError(422, "Idempotency-Key: This key was already used for a different request.");
+  }
+  return order;
+}
+
 /**
  * Create a PENDING order (called by shop-service at checkout).
  *  - variant rows are locked (SELECT ... FOR UPDATE) so two checkouts can't both take the last item
  *  - prices come from the database, never from the request
  *  - stock is checked here and reduced later, when the payment succeeds (markOrderPaid)
+ *  - with an idempotency key, a repeated call returns the SAME order ("replayed": true)
  */
-export async function createOrder(input: CreateOrderInput) {
+export async function createOrder(input: CreateOrderInput, idempotencyKey?: string) {
+  if (idempotencyKey) {
+    const existing = await findByKey(idempotencyKey);
+    if (existing) return { order: sameUserOrConflict(existing, input.user_id), replayed: true };
+  }
+  try {
+    return { order: await insertOrder(input, idempotencyKey), replayed: false };
+  } catch (e) {
+    // Two requests with the same key at the same moment: the unique index lets only one
+    // insert win; the other returns the winner's order
+    if (idempotencyKey && e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+      const existing = await findByKey(idempotencyKey);
+      if (existing) return { order: sameUserOrConflict(existing, input.user_id), replayed: true };
+    }
+    throw e;
+  }
+}
+
+async function insertOrder(input: CreateOrderInput, idempotencyKey?: string) {
   // Merge duplicate lines: [{1, 2}, {1, 1}] -> {1: 3}
   const quantities = new Map<number, number>();
   for (const { variant_id, quantity } of input.items) {
@@ -73,6 +102,7 @@ export async function createOrder(input: CreateOrderInput) {
           city: a.city,
           state: a.state,
           postalCode: a.postal_code,
+          idempotencyKey: idempotencyKey ?? null,
           items: { create: items },
         },
         include: orderInclude,

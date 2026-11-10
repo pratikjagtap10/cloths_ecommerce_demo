@@ -1,9 +1,10 @@
 // HTTP client for core-service's internal API, with three resilience layers:
 //
 //  1. TIMEOUT          every call is aborted after CORE_TIMEOUT_MS (default 3 s)
-//  2. RETRY            up to 2 retries with backoff, ONLY when the request never reached
-//                      core-service (connection refused / DNS). A timed-out POST is never
-//                      retried: it may have created the order already.
+//  2. RETRY            up to 2 retries with backoff when the request never reached
+//                      core-service (connection refused / DNS). A timed-out POST is retried
+//                      ONLY if it carries an Idempotency-Key: core then returns the order it
+//                      may already have created instead of creating a second one.
 //  3. CIRCUIT BREAKER  (opossum) after >= 50% failures in a 10 s window the breaker
 //                      OPENS: calls fail immediately with 503 for 30 s instead of every
 //                      user waiting for timeouts; then one trial call (half-open).
@@ -59,10 +60,16 @@ function neverReachedServer(err: unknown): boolean {
   return err instanceof TypeError && RETRYABLE_CODES.has(cause?.code ?? "");
 }
 
-async function send(method: "GET" | "POST", path: string, body?: unknown): Promise<unknown> {
+const isTimeout = (err: unknown) => (err as { name?: string })?.name === "TimeoutError";
+
+async function send(method: "GET" | "POST", path: string, body?: unknown, idempotencyKey?: string): Promise<unknown> {
   const res = await fetch(`${config.CORE_SERVICE_URL}${path}`, {
     method,
-    headers: { "Content-Type": "application/json", [INTERNAL_KEY_HEADER]: config.INTERNAL_API_KEY },
+    headers: {
+      "Content-Type": "application/json",
+      [INTERNAL_KEY_HEADER]: config.INTERNAL_API_KEY,
+      ...(idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {}),
+    },
     body: body === undefined ? undefined : JSON.stringify(body),
     signal: AbortSignal.timeout(config.CORE_TIMEOUT_MS),
   });
@@ -78,12 +85,20 @@ async function send(method: "GET" | "POST", path: string, body?: unknown): Promi
   return json;
 }
 
-async function sendWithRetry(method: "GET" | "POST", path: string, body?: unknown): Promise<unknown> {
+async function sendWithRetry(
+  method: "GET" | "POST",
+  path: string,
+  body?: unknown,
+  idempotencyKey?: string,
+): Promise<unknown> {
+  // GET is always safe to repeat; a POST only with an idempotency key
+  const safeToRepeat = method === "GET" || !!idempotencyKey;
   for (let attempt = 0; ; attempt++) {
     try {
-      return await send(method, path, body);
+      return await send(method, path, body, idempotencyKey);
     } catch (err) {
-      if (attempt >= 2 || !neverReachedServer(err)) throw err;
+      const retryable = neverReachedServer(err) || (safeToRepeat && isTimeout(err));
+      if (attempt >= 2 || !retryable) throw err;
       await sleep(200 * 2 ** attempt); // 200 ms, 400 ms
     }
   }
@@ -101,9 +116,9 @@ breaker.on("open", () => logger.warn("circuit breaker OPEN: core-service calls f
 breaker.on("halfOpen", () => logger.info("circuit breaker HALF-OPEN: trying core-service again"));
 breaker.on("close", () => logger.info("circuit breaker CLOSED: core-service is healthy"));
 
-async function call<T>(method: "GET" | "POST", path: string, body?: unknown): Promise<T> {
+async function call<T>(method: "GET" | "POST", path: string, body?: unknown, idempotencyKey?: string): Promise<T> {
   try {
-    return (await breaker.fire(method, path, body)) as T;
+    return (await breaker.fire(method, path, body, idempotencyKey)) as T;
   } catch (err) {
     if (err instanceof CoreHttpError) throw new ApiError(err.status, err.detail);
     logger.error({ err: (err as Error)?.message, path, breaker: breaker.opened ? "open" : "closed" }, "core-service call failed");
@@ -113,11 +128,14 @@ async function call<T>(method: "GET" | "POST", path: string, body?: unknown): Pr
 
 export const coreClient = {
   getVariant: (id: number) => call<CoreVariant>("GET", `/internal/variants/${id}/`),
-  createOrder: (payload: {
-    user_id: number;
-    items: { variant_id: number; quantity: number }[];
-    address: Record<string, string>;
-  }) => call<CoreOrder>("POST", "/internal/orders/", payload),
+  createOrder: (
+    payload: {
+      user_id: number;
+      items: { variant_id: number; quantity: number }[];
+      address: Record<string, string>;
+    },
+    idempotencyKey?: string,
+  ) => call<CoreOrder>("POST", "/internal/orders/", payload, idempotencyKey),
 };
 
 export type CoreClient = typeof coreClient;

@@ -408,15 +408,39 @@ know it well.
 > shouldn't trip the breaker.
 
 **Q55. 🔴 Which calls are retried and why not all of them?**
-> Only errors where the request **never reached** core: `ECONNREFUSED`, `ENOTFOUND` or `EAI_AGAIN`. There
-> are up to 2 retries with 200 ms and 400 ms backoff. A **timed-out POST is never retried**: core may have
-> created the order already, and retrying would create a duplicate. Retrying non-idempotent operations
-> needs an **idempotency key**.
+> Up to 2 retries with 200 ms and 400 ms backoff:
+> - always when the request **never reached** core (`ECONNREFUSED`, `ENOTFOUND`, `EAI_AGAIN`)
+> - after a **timeout** only if the call is safe to repeat: a GET, or a POST carrying an
+>   **Idempotency-Key**
+>
+> A timed-out POST *without* a key is never retried: core may have created the order already, and a
+> retry would create a duplicate.
 
-**Q56. 🔴 How would you make checkout safely retryable?**
-> The client sends an `Idempotency-Key` header (a UUID per checkout attempt). Core stores the key with
-> the created order (unique). A retry with the same key returns the existing order instead of creating a
-> new one. Stripe uses this pattern.
+**Q56. 🔴 How is checkout made safe to retry? (implemented)**
+> With **Idempotency-Keys**, end to end (the pattern Stripe and Razorpay use):
+> 1. **Frontend** ([lib/idempotency.ts](frontend/src/lib/idempotency.ts)): one key per cart + address
+>    (kept in `sessionStorage`, so even a page refresh reuses it) and one per payment action. On a network
+>    error, 502/503/504 or "still processing", it retries **with the same key** (1 s, then 2 s).
+> 2. **shop-service** ([lib/idempotency.ts](services/shop-service/src/lib/idempotency.ts)) on
+>    `POST /checkout` and `POST /payments/:id/confirm`. It stores `(user_id, key)` (unique) as
+>    IN_PROGRESS, plus a SHA-256 of the endpoint and body.
+>    - **Repeat after it finished:** the stored response is returned with `Idempotent-Replayed: true`,
+>      and nothing runs again.
+>    - **Repeat while it's running:** 409 with `Retry-After: 1`.
+>    - **Same key with a different body:** 422.
+>    - **Validation and 5xx errors** are not remembered, so the user can fix the form or retry.
+>    - **Expiry:** keys expire after 24 h, and an IN_PROGRESS key abandoned for 60 s (e.g. after a
+>      crash) can be taken over.
+> 3. **core-service:** shop passes the key down, and `orders.idempotency_key` is UNIQUE. A repeated
+>    `POST /internal/orders` returns the **same order** (200, replayed), even when two arrive at the same
+>    moment (the unique index decides). The payment uses `upsert` on `order_id`.
+>
+> Verified: the same key 3 times gives one order; 5 parallel requests give one order; a repeated "Pay"
+> gives one SUCCESS and one event.
+
+**Q56b. 🔴 Why store the response *before* sending it?**
+> If it were saved after sending, a very fast retry could arrive in between, still see IN_PROGRESS and get
+> a 409. The middleware wraps `res.json`: it saves the outcome (or deletes the key) first, then sends.
 
 **Q57. 🟡 Why have timeouts at all?**
 > Without them, a hung dependency holds connections and memory until resources run out, and the failure
@@ -640,7 +664,9 @@ know it well.
 > 3. **Tokens in localStorage** and a non-HttpOnly cookie (Q30). No refresh-token rotation or revocation.
 > 4. **HS256 shared secret** across services (Q11).
 > 5. **No dead-letter queue** for poison events (Q52).
-> 6. **Checkout POST is not idempotent:** no idempotency key (Q56).
+> 6. ~~Checkout POST is not idempotent~~: **fixed** with end-to-end Idempotency-Keys (Q56). What
+>    remains: keys are optional at the API level for backward compatibility, so a client that doesn't
+>    send one gets no protection.
 > 7. **Mock payment provider:** a real one would use webhooks with signature verification.
 > 8. **Missing DB integration tests**, no metrics or alerting, no CI pipeline yet.
 > 9. **Search** uses `ILIKE` and won't scale (Q41).
@@ -763,7 +789,8 @@ know it well.
 | bcrypt cost? | 12 |
 | Login rate limit? | 30 per minute per IP, burst 10 (Nginx) |
 | Core-call timeout? | 3 s |
-| Retries? | 2 (200 ms, 400 ms), only if the request never reached core |
+| Retries? | 2 (200 ms, 400 ms): if the request never reached core, or after a timeout for GET / keyed POST |
+| Idempotency-Key? | Checkout + payment confirm; 24 h TTL; replay header `Idempotent-Replayed: true`; 409 while in progress; 422 if reused for another body |
 | Breaker opens at? | 50% errors in 10 s, min 3 calls; open for 30 s |
 | Outbox relay interval? | 1 s, 50 rows per batch, plus an immediate flush after payment |
 | Stream name / groups? | `events` / `core-workers`, `shop-listeners` |

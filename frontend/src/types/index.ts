@@ -163,8 +163,9 @@ export interface ApiClient {
   addToCart(variantId: number, quantity: number): Promise<Cart>;
   updateCartItem(itemId: number, quantity: number): Promise<Cart>;
   removeCartItem(itemId: number): Promise<Cart>;
-  checkout(address: Address): Promise<CheckoutResult>;
-  confirmPayment(paymentId: number, success: boolean): Promise<Payment>;
+  /** idempotencyKey: same key = same order, even if the request is sent twice */
+  checkout(address: Address, idempotencyKey?: string): Promise<CheckoutResult>;
+  confirmPayment(paymentId: number, success: boolean, idempotencyKey?: string): Promise<Payment>;
   // orders (Django core service)
   getOrders(): Promise<Order[]>;
   getOrder(id: number): Promise<Order | null>;
